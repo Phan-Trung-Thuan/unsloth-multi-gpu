@@ -44,7 +44,7 @@ MODEL_PATH     = "Qwen/Qwen3-8B"
 MAX_LEN        = 1024
 LR             = 2e-5
 SAVE_STEPS     = 2000
-TARGET_GLOBAL_BATCH = 16
+TARGET_GLOBAL_BATCH = 64
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
 DATASET_PATH   = "musicpile_cluster_filtered"  # your saved dataset folder
@@ -113,12 +113,16 @@ cfg = SFTConfig(
     seed                         = 3407,
     output_dir                   = out_dir,
     save_strategy                = "steps",
-    save_steps                   = SAVE_STEPS,
+    save_steps                   = "epoch",
     save_total_limit             = 5,
     logging_steps                = 5,
     report_to                    = "none",
     optim                        = "adamw_8bit",
     ddp_find_unused_parameters   = False,
+    eval_strategy                ='epoch',
+    metric_for_best_model        ='eval_loss',
+    greater_is_better            = False,
+    load_best_model_at_end       = True,
 )
 
 # -------------------- 4) Gradient Guard Callback ---------------------
