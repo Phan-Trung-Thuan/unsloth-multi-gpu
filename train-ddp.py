@@ -19,6 +19,7 @@ from datasets import load_from_disk
 from unsloth import FastLanguageModel
 from trl import SFTTrainer, SFTConfig
 from transformers import TrainerCallback
+import shutil
 
 # --------------------------- DDP bootstrap ---------------------------
 LOCAL_RANK  = int(os.environ.get("LOCAL_RANK", 0))
@@ -39,11 +40,11 @@ log.info(f"RANK={RANK} LOCAL_RANK={LOCAL_RANK} WORLD_SIZE={WORLD_SIZE} device={d
 # --------------------------- User config -----------------------------
 LORA_RANK      = 16
 NUM_EPOCHS     = 1
-MODEL_PATH     = "Qwen/Qwen3-1.7B"
+MODEL_PATH     = "Qwen/Qwen3-8B"
 MAX_LEN        = 1024
 LR             = 2e-5
 SAVE_STEPS     = 2000
-TARGET_GLOBAL_BATCH = 512
+TARGET_GLOBAL_BATCH = 16
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
 DATASET_PATH   = "musicpile_cluster_filtered"  # your saved dataset folder
@@ -89,7 +90,7 @@ log.info("Loading dataset from disk...")
 dataset = load_from_disk(DATASET_PATH)
 
 # Shuffle and split
-dataset = dataset.shuffle(seed=3407)
+dataset = dataset.shuffle(seed=3407).select(range(1_000))
 split = int(0.9 * len(dataset))
 trainset = dataset.select(range(split))
 testset  = dataset.select(range(split, len(dataset)))
@@ -148,10 +149,25 @@ train_stats = trainer.train(resume_from_checkpoint=RESUME_FROM)
 
 # ----------------------- 6) Save final model ------------------------
 if RANK == 0:
-    save_dir = f"./lora_musicpile_qwen3_0.6B_rank{LORA_RANK}_epoch{NUM_EPOCHS}"
+    save_dir = f"./lora_musicpile_qwen3_8B_rank{LORA_RANK}_epoch{NUM_EPOCHS}"
     model.save_pretrained(save_dir)
     tokenizer.save_pretrained(save_dir)
     print(f"✅ Training complete. Saved to: {save_dir}")
+
+    if os.path.isdir(save_dir): # Ensure the directory exists before zipping
+        print(f"Starting compression of {save_dir}...")
+        
+        archive_base_name = save_dir 
+        
+        zip_path = shutil.make_archive(
+            base_name=archive_base_name, 
+            format='zip', 
+            root_dir='.',      # Start the search from the current directory
+            base_dir=save_dir  # Archive the folder itself
+        )
+        
+        print(f"✅ Model zipped successfully! File is: {zip_path}")
+        print("You can now download this single .zip file from Vast.ai.")
 
 # ----------------------- 7) Cleanup ---------------------------------
 if IS_DIST and torch.distributed.is_initialized():
