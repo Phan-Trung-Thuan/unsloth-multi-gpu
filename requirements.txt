@@ -1,5 +1,6 @@
 datasets==4.2.0
-torch==2.8.0+cu128
+torch==2.8.0
 transformers==4.56.2
 trl==0.23.0
 unsloth==2025.10.7
+--extra-index-url https://download.pytorch.org/whl/cu125
