@@ -50,7 +50,7 @@ DATASET_PATH   = "musicpile_cluster_filtered"  # your saved dataset folder
 
 # Effective batch size calculation
 per_device_bs = max(1, TARGET_GLOBAL_BATCH // max(1, WORLD_SIZE))
-grad_accum    = 4
+grad_accum    = 1
 log.info(f"per_device_train_batch_size={per_device_bs}, gradient_accumulation_steps={grad_accum}")
 
 # ---------------------- 1) Load model/tokenizer ----------------------
