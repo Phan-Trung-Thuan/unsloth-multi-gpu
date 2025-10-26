@@ -41,9 +41,9 @@ LORA_RANK      = 16
 NUM_EPOCHS     = 1
 MODEL_PATH     = "Qwen/Qwen3-0.6B"
 MAX_LEN        = 2048
-LR             = 2e-4
+LR             = 2e-5
 SAVE_STEPS     = 2000
-TARGET_GLOBAL_BATCH = 16
+TARGET_GLOBAL_BATCH = 32
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
 DATASET_PATH   = "musicpile_cluster_filtered"  # your saved dataset folder
@@ -72,12 +72,17 @@ model = FastLanguageModel.get_peft_model(
     target_modules             = ["q_proj", "k_proj", "v_proj", "o_proj",
                                   "gate_proj", "up_proj", "down_proj"],
     lora_alpha                 = LORA_RANK,
-    lora_dropout               = 0.05,
+    lora_dropout               = 0.0,
     bias                       = "none",
     qat_scheme = "int4", # Quantized Awareness Training
     use_gradient_checkpointing = "unsloth",
     random_state               = 3407,
 )
+
+for module in model.modules():
+    if "FakeQuantized" in module.__class__.__name__:
+        log.info("QAT is applied!")
+        break
 
 # ----------------------- 2) Load your dataset -----------------------
 log.info("Loading dataset from disk...")
