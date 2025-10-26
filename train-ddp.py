@@ -44,7 +44,7 @@ MODEL_PATH     = "Qwen/Qwen3-8B"
 MAX_LEN        = 1024
 LR             = 2e-5
 SAVE_STEPS     = 1000
-TARGET_GLOBAL_BATCH = 128
+TARGET_GLOBAL_BATCH = 256
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
 DATASET_PATH   = "musicpile_cluster_filtered"  # your saved dataset folder
@@ -90,7 +90,7 @@ log.info("Loading dataset from disk...")
 dataset = load_from_disk(DATASET_PATH)
 
 # Shuffle and split
-dataset = dataset.shuffle(seed=3407).select(range(1_000))
+dataset = dataset.shuffle(seed=3407)
 split = int(0.9 * len(dataset))
 trainset = dataset.select(range(split))
 testset  = dataset.select(range(split, len(dataset)))
