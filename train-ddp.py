@@ -39,11 +39,11 @@ log.info(f"RANK={RANK} LOCAL_RANK={LOCAL_RANK} WORLD_SIZE={WORLD_SIZE} device={d
 # --------------------------- User config -----------------------------
 LORA_RANK      = 16
 NUM_EPOCHS     = 1
-MODEL_PATH     = "Qwen/Qwen3-0.6B"
-MAX_LEN        = 2048
+MODEL_PATH     = "Qwen/Qwen3-1.7B"
+MAX_LEN        = 512
 LR             = 2e-5
 SAVE_STEPS     = 2000
-TARGET_GLOBAL_BATCH = 16
+TARGET_GLOBAL_BATCH = 20
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
 DATASET_PATH   = "musicpile_cluster_filtered"  # your saved dataset folder
