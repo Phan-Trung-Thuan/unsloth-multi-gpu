@@ -43,7 +43,7 @@ NUM_EPOCHS     = 1
 MODEL_PATH     = "Qwen/Qwen3-8B"
 MAX_LEN        = 1024
 LR             = 2e-5
-SAVE_STEPS     = 2000
+SAVE_STEPS     = 1000
 TARGET_GLOBAL_BATCH = 32
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
@@ -113,7 +113,7 @@ cfg = SFTConfig(
     seed                         = 3407,
     output_dir                   = out_dir,
     save_strategy                = "steps",
-    save_steps                   = "epoch",
+    save_steps                   = SAVE_STEPS,
     save_total_limit             = 5,
     logging_steps                = 5,
     report_to                    = "none",
