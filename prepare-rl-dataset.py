@@ -50,6 +50,7 @@ llm = LLM(
     enforce_eager=False,
     max_num_seqs=512
 )
+print('Finished llm object')
 
 # --- 3. Sampling configuration ---
 sampling_params = SamplingParams(
@@ -59,6 +60,7 @@ sampling_params = SamplingParams(
     repetition_penalty=1.0,
     n=1,  # one sample per prompt
 )
+print('Finished sampling_params object')
 
 new_rejected = []
 batch_size = 256
