@@ -70,7 +70,7 @@ for start in tqdm(range(0, len(ds), batch_size)):
     batch = ds[start:start + batch_size]
     prompts = [f"Human: {p}\nAssistant:" for p in batch["prompt"]]
 
-    outputs = llm.generate(prompts, sampling_params)
+    outputs = llm.generate(prompts, sampling_params, use_tqdm=False)
     new_rejected.extend([o.outputs[0].text.strip() for o in outputs])
     # break
 
