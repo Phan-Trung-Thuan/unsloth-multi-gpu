@@ -44,11 +44,11 @@ llm = LLM(
     model=model_id,
     # tokenizer=tokenizer,
     tensor_parallel_size=torch.cuda.device_count(),  # use all GPUs
-    dtype="float16",  # or "float16" if needed
-    gpu_memory_utilization=0.9, # utilize 90% of VRAM,
+    dtype="bfloat16",  # or "float16" if needed
+    gpu_memory_utilization=0.95, # utilize 90% of VRAM,
     trust_remote_code=True,
     enforce_eager=False,
-    max_num_seqs=256
+    max_num_seqs=512
 )
 
 # --- 3. Sampling configuration ---
@@ -61,7 +61,7 @@ sampling_params = SamplingParams(
 )
 
 new_rejected = []
-batch_size = 32
+batch_size = 256
 num_rows = len(ds)
 
 for start in tqdm(range(0, len(ds), batch_size)):
