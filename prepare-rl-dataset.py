@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 def main():
-    from datasets import load_from_disk
+    from datasets import load_from_disk, Dataset
     from tqdm import tqdm
-    import os
-    import torch
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-
     # --- Setup ---
     ds = load_from_disk('musicpile_cluster_filtered')
     ds = ds.remove_columns('embedding')
     print(ds)
 
+    import os
     os.environ["TRANSFORMERS_NO_TF"] = "1"
     os.environ["TRANSFORMERS_NO_FLAX"] = "1"
+
+    from vllm import LLM, SamplingParams
+    from transformers import AutoTokenizer
+    from tqdm.auto import tqdm
+    import gc
+    import torch
 
     # --- 1. Split text into prompt and chosen ---
     def split_text(example):
@@ -25,66 +28,75 @@ def main():
             example["chosen"] = ""
         return example
 
+    # Example: assume `ds` is already loaded
+    # ds = load_from_disk("your_dataset_path")
+
     ds = ds.map(split_text)
     print("✅ Added prompt and chosen columns:", ds.column_names)
 
-    # --- 2. Load Qwen3-0.6B normally (not vLLM) ---
+    # --- 2. Load Qwen3-0.6B with vLLM ---
     model_id = "Qwen/Qwen3-0.6B"
-    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True, padding_side = "left")
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        torch_dtype=torch.bfloat16,
-        device_map="auto",  # automatically spread across GPUs if available
-        trust_remote_code=True
-    )
-    model.eval()
-    print("✅ Loaded model and tokenizer")
 
-    # --- 3. Generation config ---
-    generation_kwargs = {
-        "temperature": 1.2,
-        "top_p": 0.9,
-        "max_new_tokens": 512,
-        "repetition_penalty": 1.0,
-        "do_sample": True
-    }
+    # tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+    # vLLM uses its own optimized engine (multi-GPU aware)
+    llm = LLM(
+        model=model_id,
+        # tokenizer=tokenizer,
+        tensor_parallel_size=torch.cuda.device_count(),  # use all GPUs
+        dtype="bfloat16",  # or "float16" if needed
+        gpu_memory_utilization=0.95, # utilize 90% of VRAM,
+        trust_remote_code=True,
+        enforce_eager=False,
+        max_num_seqs=512
+    )
+    print('Finished llm object')
+
+    # --- 3. Sampling configuration ---
+    sampling_params = SamplingParams(
+        temperature=1.2,
+        top_p=0.9,
+        max_tokens=512,
+        repetition_penalty=1.0,
+        n=1,  # one sample per prompt
+    )
+    print('Finished sampling_params object')
 
     new_rejected = []
-    batch_size = 16
+    batch_size = 2
+    num_rows = len(ds)
 
-    # --- 4. Inference loop ---
     for start in tqdm(range(0, len(ds), batch_size)):
         batch = ds[start:start + batch_size]
         prompts = [f"Human: {p}\nAssistant:" for p in batch["prompt"]]
-        inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True).to(model.device)
 
-        with torch.no_grad():
-            outputs = model.generate(**inputs, **generation_kwargs)
-
-        decoded = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        # Extract only the assistant part
-        cleaned = []
-        for full_text, prompt in zip(decoded, prompts):
-            if "Assistant:" in full_text:
-                cleaned.append(full_text.split("Assistant:")[-1].strip())
-            else:
-                cleaned.append(full_text.strip())
-        new_rejected.extend(cleaned)
+        outputs = llm.generate(prompts, sampling_params, use_tqdm=False)
+        new_rejected.extend([o.outputs[0].text.strip() for o in outputs])
+        # break
 
     # --- 5. Add to dataset and save ---
+    # ds = ds.select(range(batch_size))
     ds = ds.add_column("rejected", new_rejected)
 
-    save_dir = "musicpile_rlhf_pairs_hf"
+    save_dir = "musicpile_rlhf_pairs_vllm"
     ds.save_to_disk(save_dir)
     print(f"✅ Saved dataset to: {save_dir}")
 
-    # --- 6. Optional compression ---
     import shutil
-    if os.path.isdir(save_dir):
+    if os.path.isdir(save_dir): # Ensure the directory exists before zipping
         print(f"Starting compression of {save_dir}...")
-        zip_path = shutil.make_archive(base_name=save_dir, format="zip", root_dir=".", base_dir=save_dir)
-        print(f"✅ Zipped dataset: {zip_path}")
-        print("You can now download this .zip file from Vast.ai.")
+        
+        archive_base_name = save_dir 
+        
+        zip_path = shutil.make_archive(
+            base_name=archive_base_name, 
+            format='zip', 
+            root_dir='.',      # Start the search from the current directory
+            base_dir=save_dir  # Archive the folder itself
+        )
+        
+        print(f"✅ Model zipped successfully! File is: {zip_path}")
+        print("You can now download this single .zip file from Vast.ai.")
 
 if __name__ == "__main__":
     main()
