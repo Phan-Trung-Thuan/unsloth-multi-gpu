@@ -45,7 +45,8 @@ def main():
         # tokenizer=tokenizer,
         tensor_parallel_size=torch.cuda.device_count(),  # use all GPUs
         dtype="bfloat16",  # or "float16" if needed
-        gpu_memory_utilization=0.05, # utilize 90% of VRAM,
+        gpu_memory_utilization=0.057, # utilize 90% of VRAM,
+        quantization="awq",
         trust_remote_code=True,
         enforce_eager=False,
         max_model_len=512
