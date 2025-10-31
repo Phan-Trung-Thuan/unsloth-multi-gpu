@@ -63,7 +63,7 @@ def main():
     print('Finished sampling_params object')
 
     new_rejected = []
-    batch_size = 64
+    batch_size = 16
     num_rows = len(ds)
 
     for start in tqdm(range(0, len(ds), batch_size)):
