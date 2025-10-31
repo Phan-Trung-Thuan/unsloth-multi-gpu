@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-from datasets import load_from_disk, Dataset
-from tqdm import tqdm
-
 def main():
+    from datasets import load_from_disk, Dataset
+    from tqdm import tqdm
     # --- Setup ---
     ds = load_from_disk('musicpile_cluster_filtered')
     ds = ds.remove_columns('embedding')
@@ -17,7 +16,6 @@ def main():
     from tqdm.auto import tqdm
     import gc
     import torch
-    from datasets import load_from_disk  # if loading existing ds
 
     # --- 1. Split text into prompt and chosen ---
     def split_text(example):
