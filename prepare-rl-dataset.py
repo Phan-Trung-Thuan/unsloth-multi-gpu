@@ -50,7 +50,7 @@ def main():
     }
 
     new_rejected = []
-    batch_size = 8
+    batch_size = 32
 
     # --- 4. Inference loop ---
     for start in tqdm(range(0, len(ds), batch_size)):
