@@ -38,8 +38,8 @@ log = logging.getLogger("train_sft")
 log.info(f"RANK={RANK} LOCAL_RANK={LOCAL_RANK} WORLD_SIZE={WORLD_SIZE} device={device}")
 
 # --------------------------- User config -----------------------------
-LORA_RANK      = 16
-NUM_EPOCHS     = 1
+LORA_RANK      = 32
+NUM_EPOCHS     = 10
 MODEL_PATH     = "Qwen/Qwen3-8B"
 MAX_LEN        = 1024
 LR             = 2e-4
