@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from datasets import load_from_disk, Dataset
 from tqdm import tqdm
 
