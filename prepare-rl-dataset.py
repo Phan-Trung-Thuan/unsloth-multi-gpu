@@ -48,7 +48,7 @@ def main():
         gpu_memory_utilization=0.05, # utilize 90% of VRAM,
         trust_remote_code=True,
         enforce_eager=False,
-        max_num_seqs=512
+        max_model_len=512
     )
     print('Finished llm object')
 
