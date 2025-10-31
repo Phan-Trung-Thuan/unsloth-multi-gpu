@@ -30,7 +30,7 @@ def main():
 
     # --- 2. Load Qwen3-0.6B normally (not vLLM) ---
     model_id = "Qwen/Qwen3-0.6B"
-    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True, padding_side = "left")
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         torch_dtype=torch.bfloat16,
