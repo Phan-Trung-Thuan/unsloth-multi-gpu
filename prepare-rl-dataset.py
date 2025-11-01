@@ -35,7 +35,7 @@ def main():
     print("✅ Added prompt and chosen columns:", ds.column_names)
 
     # --- 2. Load Qwen3-0.6B with vLLM ---
-    model_id = "Qwen/Qwen3"
+    model_id = "Qwen/Qwen3-0.6B"
 
     # tokenizer = AutoTokenizer.from_pretrained(model_id)
 
