@@ -45,8 +45,8 @@ def main():
         # tokenizer=tokenizer,
         tensor_parallel_size=torch.cuda.device_count(),  # use all GPUs
         dtype="bfloat16",  # or "float16" if needed
-        gpu_memory_utilization=0.057, # utilize 90% of VRAM,
-        quantization="awq",
+        gpu_memory_utilization=0.45, # utilize 90% of VRAM,
+        # quantization="awq",
         trust_remote_code=True,
         enforce_eager=False,
         max_model_len=512
@@ -64,7 +64,7 @@ def main():
     print('Finished sampling_params object')
 
     new_rejected = []
-    batch_size = 8
+    batch_size = 32
     num_rows = len(ds)
 
     for start in tqdm(range(0, len(ds), batch_size)):
