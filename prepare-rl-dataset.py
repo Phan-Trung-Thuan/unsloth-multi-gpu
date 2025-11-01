@@ -49,7 +49,7 @@ def main():
         # quantization="awq",
         trust_remote_code=True,
         enforce_eager=False,
-        max_model_len=1024
+        max_model_len=2048
     )
     print('Finished llm object')
 
