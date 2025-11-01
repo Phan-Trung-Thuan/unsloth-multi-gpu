@@ -35,7 +35,7 @@ def main():
     print("✅ Added prompt and chosen columns:", ds.column_names)
 
     # --- 2. Load Qwen3-0.6B with vLLM ---
-    model_id = "Qwen/Qwen3-0.6B"
+    model_id = "unsloth/Qwen3-0.6B-unsloth-bnb-4bit"
 
     # tokenizer = AutoTokenizer.from_pretrained(model_id)
 
@@ -64,7 +64,7 @@ def main():
     print('Finished sampling_params object')
 
     new_rejected = []
-    batch_size = 1
+    batch_size = 8
     num_rows = len(ds)
 
     for start in tqdm(range(0, len(ds), batch_size)):
