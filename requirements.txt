@@ -1,12 +1,12 @@
-# datasets==4.2.0
-# torch==2.8.0
-# transformers==4.56.2
-# trl==0.23.0
-# unsloth==2025.10.7
-# --extra-index-url https://download.pytorch.org/whl/cu125
 datasets==4.2.0
-torch==2.3.1+cu121
-transformers==4.43.3
-trl==0.9.4
-unsloth==2024.8
---extra-index-url https://download.pytorch.org/whl/cu121
+torch==2.8.0
+transformers==4.56.2
+trl==0.23.0
+unsloth==2025.10.7
+--extra-index-url https://download.pytorch.org/whl/cu126
+# datasets==4.2.0
+# torch==2.3.1+cu121
+# transformers==4.43.3
+# trl==0.9.4
+# unsloth==2024.8
+# --extra-index-url https://download.pytorch.org/whl/cu121
