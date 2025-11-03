@@ -47,7 +47,7 @@ SAVE_STEPS     = 1000
 TARGET_GLOBAL_BATCH = 1
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
-DATASET_PATH   = "musicpile_cluster_filtered"  # your saved dataset folder
+DATASET_PATH   = "musicpile_cluster_filtered_v2"  # your saved dataset folder
 
 # Effective batch size calculation
 per_device_bs = max(1, TARGET_GLOBAL_BATCH // max(1, WORLD_SIZE))
@@ -98,7 +98,7 @@ testset  = dataset.select(range(split, len(dataset)))
 log.info(f"Dataset loaded: {len(trainset)} train / {len(testset)} test samples")
 
 # ---------------------- 3) SFT config -------------------------------
-out_dir = f"./checkpoints_musicpile_qwen3_0.6B_lora{LORA_RANK}"
+out_dir = f"./checkpoints_musicpile_qwen3_8B_lora{LORA_RANK}"
 
 cfg = SFTConfig(
     dataset_text_field           = "text",
