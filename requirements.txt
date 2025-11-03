@@ -8,5 +8,5 @@ torch==2.2.2
 transformers==4.40.2
 trl==0.8.6
 datasets==2.18.0
-unsloth==2024.5.7
+unsloth==2024.11.9
 --extra-index-url https://download.pytorch.org/whl/cu120
