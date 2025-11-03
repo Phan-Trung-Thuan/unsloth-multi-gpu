@@ -44,7 +44,7 @@ MODEL_PATH     = "Qwen/Qwen3-8B"
 MAX_LEN        = 1024
 LR             = 2e-4
 SAVE_STEPS     = 1000
-TARGET_GLOBAL_BATCH = 1024
+TARGET_GLOBAL_BATCH = 8
 RESUME_FROM    = None  # e.g., "checkpoints/checkpoint-1000"
 
 DATASET_PATH   = "musicpile_cluster_filtered_v2"  # your saved dataset folder
