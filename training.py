@@ -18,7 +18,7 @@ fourbit_models = [
 ] # More models at https://huggingface.co/unsloth
 
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "unsloth/Qwen3-4B-Instruct-2507-unsloth-bnb-4bit",
+    model_name = "Qwen/Qwen3-4B-Instruct-2507",
     max_seq_length = 2048,   # Choose any for long context!
     load_in_4bit = False,    # 4 bit quantization to reduce memory
     load_in_8bit = False,    # [NEW!] A bit more accurate, uses 2x memory
