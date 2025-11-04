@@ -25,7 +25,6 @@ model, tokenizer = FastLanguageModel.from_pretrained(
     full_finetuning = False, # [NEW!] We have full finetuning now!
     # token = "hf_...", # use one if using gated models
     device_map='auto',
-    dtype=torch.bfloat16,
 )
 
 import torch
@@ -89,14 +88,16 @@ trainer = SFTTrainer(
     train_dataset = trainset,
     eval_dataset = testset, # Can set up evaluation!
     args = SFTConfig(
+        output_dir = "./checkpoints",
         dataset_text_field = "text",
         per_device_train_batch_size = 24,
         gradient_accumulation_steps = 1, # Use GA to mimic batch size!
         warmup_steps = 200,
         save_steps=200,
         save_strategy='steps',
+        # save_total_limit = 3,
         # num_train_epochs = 1, # Set this for 1 full training run.
-        max_steps = 1000,
+        max_steps = 600,
         learning_rate = 2e-4, # Reduce to 2e-5 for long training runs
         logging_steps = 1,
         optim = "adamw_8bit",
@@ -120,7 +121,7 @@ gc.collect()
 torch.cuda.empty_cache()
 torch.cuda.ipc_collect()
 
-trainer_stats = trainer.train()
+trainer_stats = trainer.train(resume_from_checkpoint=False)
 
 from torchao.quantization import quantize_
 from torchao.quantization.qat import QATConfig
