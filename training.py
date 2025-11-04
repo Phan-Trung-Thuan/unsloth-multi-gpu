@@ -92,6 +92,7 @@ trainer = SFTTrainer(
         lr_scheduler_type = "linear",
         seed = 3407,
         report_to = "none", # Use this for WandB etc
+        ddp_find_unused_parameters = False
     ),
 )
 
