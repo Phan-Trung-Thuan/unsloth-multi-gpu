@@ -20,11 +20,19 @@ fourbit_models = [
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name = "unsloth/Qwen3-4B-Instruct-2507-unsloth-bnb-4bit",
     max_seq_length = 2048,   # Choose any for long context!
-    load_in_4bit = False,    # 4 bit quantization to reduce memory
+    load_in_4bit = True,    # 4 bit quantization to reduce memory
     load_in_8bit = False,    # [NEW!] A bit more accurate, uses 2x memory
     full_finetuning = False, # [NEW!] We have full finetuning now!
     # token = "hf_...", # use one if using gated models
 )
+
+import torch
+import gc
+
+# Clear cache and collect garbage
+gc.collect()
+torch.cuda.empty_cache()
+torch.cuda.ipc_collect()
 
 model = FastLanguageModel.get_peft_model(
     model,
@@ -102,6 +110,11 @@ trainer = train_on_responses_only(
     instruction_part = "<|im_start|>user\n",
     response_part = "<|im_start|>assistant\n",
 )
+
+# Clear cache and collect garbage
+gc.collect()
+torch.cuda.empty_cache()
+torch.cuda.ipc_collect()
 
 trainer_stats = trainer.train()
 
