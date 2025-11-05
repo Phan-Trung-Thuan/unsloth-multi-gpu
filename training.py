@@ -97,7 +97,7 @@ trainer = SFTTrainer(
         save_strategy='steps',
         # save_total_limit = 3,
         # num_train_epochs = 1, # Set this for 1 full training run.
-        max_steps = 600,
+        max_steps = 1200,
         learning_rate = 2e-4, # Reduce to 2e-5 for long training runs
         logging_steps = 1,
         optim = "adamw_8bit",
@@ -121,7 +121,7 @@ gc.collect()
 torch.cuda.empty_cache()
 torch.cuda.ipc_collect()
 
-trainer_stats = trainer.train(resume_from_checkpoint=False)
+trainer_stats = trainer.train(resume_from_checkpoint=True)
 
 from torchao.quantization import quantize_
 from torchao.quantization.qat import QATConfig
